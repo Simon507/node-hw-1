@@ -16,7 +16,15 @@ const getContactById = async contactId => {
 };
 
 const removeContact = async contactId => {
-  console.warn(`\x1b[32m The contact with id ${contactId} succefully deleted!`);
+  const allcontacts = await listContacts();
+  const index = allcontacts.findIndex(item => item.id === contactId);
+  if (index === -1) {
+    console.warn('\x1B[31m Contact not found');
+    return null;
+  }
+  const [data] = allcontacts.splice(index, 1);
+  await fs.writeFile(contactsPath, JSON.stringify(allcontacts, null, 2));
+  return data;
 };
 
 const addContact = async data => {
@@ -27,9 +35,7 @@ const addContact = async data => {
   };
   allContacts.push(newContact);
   await fs.writeFile(contactsPath, JSON.stringify(allContacts, null, 2));
-  console.warn(
-    `\x1b[32m The contact ${name} with email ${email} and phone ${phone} succefully create!`
-  );
+
   console.table(allContacts);
   return newContact;
 };

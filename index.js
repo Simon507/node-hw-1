@@ -1,6 +1,9 @@
 const path = require('path');
 const contactsModulePath = path.resolve('contacts.js');
 
+const yargs = require('yargs');
+const { hideBin } = require('yargs/helpers');
+
 const contactsServices = require(contactsModulePath);
 
 const invokeAction = async ({ action, id, name, email, phone }) => {
@@ -15,13 +18,13 @@ const invokeAction = async ({ action, id, name, email, phone }) => {
       break;
     case 'add':
       const addContacts = await contactsServices.addContact({ name, email, phone });
-      console.warn(
-        `\x1b[32m The contact ${name} with email ${email} and phone ${phone} succefully create!`
+      return console.warn(
+        `\x1b[32m The contact ${addContacts.name} with email ${addContacts.email} and phone ${addContacts.phone} succefully create!`
       );
-      break;
     case 'remove':
-      const removeContact = await contactsServices.removeContact(id);
-
+      const remContact = await contactsServices.removeContact(id);
+      console.table(remContact);
+      console.log(`\x1b[32m Deleted contact: ${remContact.name}`);
       break;
     default:
       console.warn('\x1B[31m Unknown action type!');
@@ -29,7 +32,6 @@ const invokeAction = async ({ action, id, name, email, phone }) => {
   }
 };
 
-invokeAction({
-  action: 'remove',
-  id: 'qdggE76Jtbfd9eWJHrssH',
-});
+const arr = hideBin(process.argv);
+const { argv } = yargs(arr);
+invokeAction(argv);
